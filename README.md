@@ -11,19 +11,24 @@ As a reminder, in Von Neumann architecture :
 
 | Operation | Opcode | Addressing modes                    | purpose                            |
 | :-------- | :----: | :---------------------------------- | :--------------------------------- |
-| MOV       |  00001 | register, imm or register, register | moves values in register           |
-| ADD       |  00010 | register, register or register, imm | add values and store in register   |
-| SUB       |  00011 | register, register or register, imm | sub values and do the same         |
-| AND       |  00101 | register, imm or register, register | bitwise and                        |
-| OR        |  00110 | register, imm or register, register | bitwise or                         |
-| NOT       |  00111 | register                            | bitwise not                        |
-| JMP       |  01000 | register or imm                     | set PC to value                    |
-| JNZ       |  01001 | register or imm                     | JMP if R0 doesn't contain 0        |
-| CALL      |  10010 | register or imm                     | push a saved pc and jmp on label   |
-| RET       |  10011 | nothing                             | equivalent of POP PC               |
-| POP       |  10100 | register                            | store value from stack on register |
-| PUSH      |  10101 | register or imm                     | place value from register on stack |
+| MOV       | 000001 | register, imm or register, register | moves values in register           |
+| ADD       | 000010 | register, register or register, imm | add values and store in register   |
+| SUB       | 000011 | register, register or register, imm | sub values and do the same         |
+| AND       | 000101 | register, imm or register, register | bitwise and                        |
+| OR        | 000110 | register, imm or register, register | bitwise or                         |
+| NOT       | 000111 | register                            | bitwise not                        |
+| JMP       | 001000 | register or imm                     | set PC to value                    |
+| JNZ       | 001001 | register or imm                     | JMP if R0 doesn't contain 0        |
+| CALL      | 010010 | register or imm                     | push a saved pc and jmp on label   |
+| RET       | 010011 | nothing                             | equivalent of POP PC               |
+| POP       | 010100 | register                            | store value from stack on register |
+| PUSH      | 010101 | register or imm                     | place value from register on stack |
 
+Each instruction will be denoted by 12 bits : 6 for the opcode, 3 for the first operand and 3 for the second (therefore we have 2^2 = 4 registers : R0, R1, PC and IP plus the 111 that denotes and immediate value which we will seek for in the next 12 bits we parse).
+
+Example :
+`MOV R0, #2` will become `000001000111 000000000010`
+                          (operand-register0-imm imm-value)
 
 ## Parsing real code 
 
