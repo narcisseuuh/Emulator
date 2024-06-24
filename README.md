@@ -23,6 +23,7 @@ As a reminder, in Von Neumann architecture :
 | RET       | 010011 | nothing                             | equivalent of POP PC               |
 | POP       | 010100 | register                            | store value from stack on register |
 | PUSH      | 010101 | register or imm                     | place value from register on stack |
+| SYSCALL   | 010110 | nothing                             | will exec a syscall                |
 
 Each instruction will be denoted by 12 bits : 6 for the opcode, 3 for the first operand and 3 for the second (therefore we have 2^3 - 1 = 7 registers : R0, ..., R4, PC and IP plus the 111 that denotes an immediate value which we will seek for in the next 12 bits we parse).
 
@@ -30,10 +31,26 @@ Example :
 `MOV R0, #2` will become `000001000111 000000000010`
                           (`operand-register0-imm` and then `imm-value`)
 
+## System calls 
+
+| syscall | R0 | R1             | R2                            |
+| :-----: | :-:| :------------: | :----------------------------:|
+| read    | 0  | buffer address | maximum amount of bytes read  |
+| write   | 0  | buffer address | maximum amount of bytes shown |
+
+## Comments 
+
+I allow writing comments in the file which will be ignored when I will assemble. they are denoted by `;`, for example :
+```assembly
+MOV R0, 0 ; preparing for syscall read
+```
+
 ## Parsing real code 
 
 I have written a short program that you can check in `example.asm`. It uses basic operations and some labels. To denote an immediate value I use the `#` sign. for example `#3` will denote 3.
-My common registers are noted R0, R1, etc. I also denote the program counter as PC, and stack pointer as SP. 
+My common registers are noted R0, R1, etc. I also denote the program counter as PC, and stack pointer as SP.
+
+When we will emulate our execution after parsing the entry passed by the file `example.asm`, our emulator will focus on executing from the label `entry`.
 
 # Relevant files
 
