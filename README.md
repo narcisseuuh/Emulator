@@ -24,6 +24,7 @@ As a reminder, in Von Neumann architecture :
 | POP       | 010100 | register                            | store value from stack on register |
 | PUSH      | 010101 | register or imm                     | place value from register on stack |
 | SYSCALL   | 010110 | nothing                             | will exec a syscall                |
+| HALT      | 111111 | nothing                             | terminates the execution           |
 
 Each instruction will be denoted by 12 bits : 6 for the opcode, 3 for the first operand and 3 for the second (therefore we have 2^3 - 1 = 7 registers : R0, ..., R4, PC and IP plus the 111 that denotes an immediate value which we will seek for in the next 12 bits we parse).
 
@@ -51,6 +52,7 @@ I have written a short program that you can check in `example.asm`. It uses basi
 My common registers are noted R0, R1, etc. I also denote the program counter as PC, and stack pointer as SP.
 
 When we will emulate our execution after parsing the entry passed by the file `example.asm`, our emulator will focus on executing from the label `entry`.
+In `example.bin` is the traduction of our entry in `example.asm` into the bytecode we previously specified. A function in `bin/assemble.ml` contains the code that will transform our assembly readable program into the bytecode we previously specified.
 
 # Relevant files
 
