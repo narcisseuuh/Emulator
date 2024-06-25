@@ -78,6 +78,7 @@ let exec_instruction m =
   | RET -> exec_ret m 
   | SYSCALL -> exec_syscall m 
   | HALT -> m.finished <- true
+  | NOP -> ()
 
 let rec move left right amount =
   (* moving in a double linked list according to the signed integer 'amount'. *)

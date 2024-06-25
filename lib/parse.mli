@@ -19,8 +19,9 @@ type token =
   | RET
   | SYSCALL
   | HALT
+  | NOP
 
-exception ParseError
+exception ParseError of string
 
 val parse_line : string -> token
 (*

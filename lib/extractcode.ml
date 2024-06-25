@@ -30,7 +30,7 @@ let treat_line line =
   | None -> line 
   | Some i -> String.sub line 0 i;; 
 
-let treat_lines lines = List.map treat_line lines;;
+let treat_lines lines = List.filter (fun x -> x <> "") (List.map treat_line lines);;
 
 let extract file =
   let lines = read_input file in 

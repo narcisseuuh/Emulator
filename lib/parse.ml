@@ -20,11 +20,12 @@ type token =
   | LABEL of string
   | RET
   | SYSCALL
-  | HALT;;
+  | HALT
+  | NOP;;
 
-exception ParseError;;
+exception ParseError of string;;
 
-let get_alphanum_tokens line =
+let split_line_spaces line =
   (* helper function extracting tokens from a line *)
   String.split_on_char ' ' line;;
 
@@ -44,9 +45,9 @@ let to_value value =
     if v >= 0 && v <= 5 then
       REG v
     else
-      raise ParseError
+      raise (ParseError "unbound value")
   else
-    raise ParseError;;
+    raise (ParseError "unbound value");;
 
 let parse_line line =
   let choose_token tok rest =
@@ -63,7 +64,7 @@ let parse_line line =
       else if String.equal tok "OR" then
         OR ((to_value first), (to_value second))
       else 
-        raise ParseError
+        raise (ParseError "unknown binary operator")
     | (first::[]) ->
       if String.equal tok "NOT" then 
         NOT (to_value first)
@@ -87,13 +88,13 @@ let parse_line line =
       else if String.equal tok "HALT" then 
         HALT
       else 
-        raise ParseError
+        NOP
     | _ ->
-        raise ParseError
+        raise (ParseError "too much operators provided.")
   in
-  let tokens = get_alphanum_tokens line in 
+  let tokens = split_line_spaces line in 
   match tokens with
-  | [] -> raise ParseError 
+  | [] -> raise (ParseError "empty line")
   | (tok::rest) -> choose_token tok rest;;
 
 
@@ -116,4 +117,4 @@ let parse_lines file =
     let final_hashtable = create_hashtable next_lines l [] h in 
     final_hashtable
   end
-  | _ -> raise ParseError;; (* each program should begin with a label *)
+  | _ -> raise (ParseError "instruction with no label.");; (* each program should begin with a label *)
