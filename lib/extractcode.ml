@@ -2,8 +2,9 @@ let read_input file =
   let lines = ref [] in 
   let ic = open_in file in 
   try 
-    while true do 
-      lines := input_line ic : !lines 
+    while true do
+      let old_lines = !lines in
+      lines := (input_line ic :: old_lines)
     done; !lines 
   with End_of_file ->
     close_in ic;
@@ -12,11 +13,17 @@ let read_input file =
 let treat_line line = 
   let find_semicolumn line =
     (* returns an option int : None if no semicolumn, Some i if s.[i] == ';' *)
-    let len = String.length line in 
-    for i = 0 to len do 
-      if s.[i] = ';' then 
+    let rec aux line i len =
+      if i >= len then 
+        None
+      else begin 
+      if line.[i] = ';' then
         Some i 
-    None
+      else
+        aux line (i + 1) len
+      end
+    in let len = String.length line in 
+    aux line 0 len
   in 
   let sc = find_semicolumn line in 
   match sc with 
@@ -25,7 +32,7 @@ let treat_line line =
 
 let treat_lines lines = List.map treat_line lines;;
 
-let extract_code file =
+let extract file =
   let lines = read_input file in 
   treat_lines lines;;
 

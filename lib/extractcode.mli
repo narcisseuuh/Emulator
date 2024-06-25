@@ -15,13 +15,13 @@ val treat_lines : string list -> string list
 mapping treat_line to each lines of a list of lines in a file.
  *)
 
-val extract_code : string -> string list 
+val extract : string -> string list 
 (*
 in : a file name.
 out : a list of lines treated to be then parsed.
  *)
 
-val show_lines : string list -> ()
+val show_lines : string list -> unit
 (*
 in : a list of lines extracted from a file.
 out : a pretty print of each line to debug.

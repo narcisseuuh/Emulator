@@ -1,3 +1,3 @@
 (library
  (name emulator)
- (modules emulate extract_code parse))
+ (modules emulate extractcode parse))

@@ -1,5 +1,3 @@
-open Extract_code
-
 type value =
   | REG of int 
   | IMM of int
