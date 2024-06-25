@@ -6,6 +6,7 @@ type machine = {
   sp : int,
   stack : int Dynarray.t,
   ir : token,
+  label : string, (* to know in which token we currently are *)
   finished : bool (* have we hit the halt instruction *)
 }
 
@@ -19,7 +20,7 @@ val exec_instruction : machine -> machine
 executing the instruction stored in the IR to go to the next state of our machine.
  *)
 
-val exec_program : token list -> machine 
+val exec_program : (string, token list) Hashtbl.t -> machine 
 (*
 in : a list of tokens representing a program.
 out : a machine at its final state.
