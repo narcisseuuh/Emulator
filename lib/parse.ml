@@ -96,5 +96,24 @@ let parse_line line =
   | [] -> raise ParseError 
   | tok:rest -> choose_token tok rest;;
 
-let parse_lines lines =
 
+let rec create_hashtable lines current_label token_list h =
+  match lines with 
+  | (LABEL new_label):next_tokens -> begin
+      let current_tokens = List.rev token_list in 
+      h.add current_label current_tokens;
+      create_hashtable next_tokens new_label [] h
+    end
+  | curr:next_lines -> create_hashtable next_lines current_label (curr:token_list) h
+  | [] -> h
+
+let parse_lines file =
+  let h = Hashtbl.create 5 in (* initial guess on number of labels *)
+  let lines = Extract_code.extract_code file in  
+  match lines with 
+  | [] -> h 
+  | (LABEL l):next_lines -> begin 
+    let final_hashtable = create_hashtable next_lines l [] h in 
+    final_hashtable
+  end
+  | _ -> raise ParseError;; (* each program should begin with a label *)
