@@ -46,6 +46,10 @@ I allow writing comments in the file which will be ignored when I will assemble.
 MOV R0, 0 ; preparing for syscall read
 ```
 
+## Behaviour of the Stack 
+
+I decided stack will just be chunks of length 32 bits (integers basically), and therefore if you decide to allocate on the stack or to read at stack offsets, it will be automatically rounded to the nearest multiple of 32 for allocation, and in case of read it will just cause a segmentation fault.
+
 ## Parsing real code 
 
 I have written a short program that you can check in `example.asm`. It uses basic operations and some labels. To denote an immediate value I use the `#` sign. for example `#3` will denote 3.

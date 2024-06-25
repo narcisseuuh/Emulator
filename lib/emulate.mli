@@ -15,6 +15,8 @@ exception Fail of string
 
 exception Non_terminating (* if the program is not finished by a halt instruction *)
 
+exception Segmentation_Fault
+
 val exec_instruction : machine -> machine 
 (*
 executing the instruction stored in the IR to go to the next state of our machine.
