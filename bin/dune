@@ -1,4 +1,5 @@
 (executable
  (public_name emulator)
  (name main)
- (libraries emulator))
+ (libraries emulator)
+ (modules assemble main))
