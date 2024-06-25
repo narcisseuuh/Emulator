@@ -2,7 +2,6 @@ type value =
   | REG of int 
   | IMM of int
   | PC
-  | SP 
 
 type token =
   | MOV of value * value 

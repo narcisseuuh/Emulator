@@ -26,7 +26,7 @@ As a reminder, in Von Neumann architecture :
 | SYSCALL   | 010110 | nothing                             | will exec a syscall                |
 | HALT      | 111111 | nothing                             | terminates the execution           |
 
-Each instruction will be denoted by 12 bits : 6 for the opcode, 3 for the first operand and 3 for the second (therefore we have 2^3 - 1 = 7 registers : R0, ..., R4, PC and IP plus the 111 that denotes an immediate value which we will seek for in the next 12 bits we parse).
+Each instruction will be denoted by 12 bits : 6 for the opcode, 3 for the first operand and 3 for the second (therefore we have 2^3 - 1 = 7 registers : R0, ..., R4, R5, PC plus the 111 that denotes an immediate value which we will seek for in the next 12 bits we parse).
 
 Example :
 `MOV R0, #2` will become `000001000111 000000000010`
@@ -34,10 +34,10 @@ Example :
 
 ## System calls 
 
-| syscall | R0 | R1             | R2                            |
-| :-----: | :-:| :------------: | :----------------------------:|
-| read    | 0  | buffer address | maximum amount of bytes read  |
-| write   | 0  | buffer address | maximum amount of bytes shown |
+| syscall | R0 | R1             |
+| :-----: | :-:| :------------: |
+| read    | 0  | value          |
+| write   | 0  | value          |
 
 ## Comments 
 
@@ -48,7 +48,7 @@ MOV R0, 0 ; preparing for syscall read
 
 ## Behaviour of the Stack 
 
-I decided stack will just be chunks of length 32 bits (integers basically), and therefore if you decide to allocate on the stack or to read at stack offsets, it will be automatically rounded to the nearest multiple of 32 for allocation, and in case of read it will just cause a segmentation fault.
+I decided stack will just be chunks of length 32 bits (integers basically), and no allocation on the stack. Therefore, to interact with the stack you can only use `PUSH` and `POP`.
 
 ## Parsing real code 
 
@@ -62,7 +62,7 @@ In `example.bin` is the traduction of our entry in `example.asm` into the byteco
 
 ## Reading files 
 
-Check `lib/extract_code.ml` and `extract_code.mli`.
+Check `lib/extractcode.ml` and `extractcode.mli`.
 
 ## Parsing files 
 
@@ -74,7 +74,7 @@ Check `lib/emulate.ml` and `lib/emulate.mli`.
 
 # Usage
 
-If you want to use it for yourself, you juste have to edit the `example.asm` file. Then :
+If you want to use it for yourself, you just have to edit the `example.asm` file. Then :
 
 Build :
 ```bash

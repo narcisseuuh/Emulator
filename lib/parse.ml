@@ -3,8 +3,7 @@ open! Extractcode
 type value =
   | REG of int 
   | IMM of int
-  | PC
-  | SP 
+  | PC;;
 
 type token =
   | MOV of value * value 
@@ -21,7 +20,7 @@ type token =
   | LABEL of string
   | RET
   | SYSCALL
-  | HALT
+  | HALT;;
 
 exception ParseError;;
 
@@ -37,20 +36,17 @@ let extract_int value =
 
 let to_value value =
   if String.equal value "PC" then 
-    PC 
-  else if String.equal value "SP" then 
-    SP 
-  else
-    if value.[0] = '#' then 
-      IMM (extract_int value)
-    else if value.[0] = 'R' then
-      let v = extract_int value in 
-      if v >= 0 && v <= 4 then
-        REG (extract_int value)
-      else 
-        failwith "unknown register detected (registers are R0, ..., R4)"
+    PC
+  else if value.[0] = '#' then 
+    IMM (extract_int value)
+  else if value.[0] = 'R' then
+    let v = extract_int value in 
+    if v >= 0 && v <= 5 then
+      REG v
     else
-      raise ParseError;;
+      raise ParseError
+  else
+    raise ParseError;;
 
 let parse_line line =
   let choose_token tok rest =
