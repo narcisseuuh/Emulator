@@ -1,41 +1,28 @@
 open! Extractcode
-
-type value =
-  | REG of int 
-  | IMM of int
-  | PC;;
-
-type token =
-  | MOV of value * value 
-  | ADD of value * value 
-  | SUB of value * value
-  | AND of value * value 
-  | OR of value * value 
-  | NOT of value 
-  | JMP of string
-  | JNZ of string
-  | CALL of string
-  | POP of value 
-  | PUSH of value
-  | LABEL of string
-  | RET
-  | SYSCALL
-  | HALT
-  | NOP;;
+open! Prettyprint
+open! Types
 
 exception ParseError of string;;
 
+let remove_comma pat =
+  (* helper function which will remove comma from a string *)
+  let splitted = String.split_on_char ',' pat in 
+  List.fold_left (^) "" splitted;;
+
 let split_line_spaces line =
-  (* helper function extracting tokens from a line *)
-  String.split_on_char ' ' line;;
+  (* helper function extracting tokens from a line, it will split the string on spaces to extract each token and then treat all of them to remove commas, or removing empty strings. *)
+  let splitted = String.split_on_char ' ' line in 
+  let commas_removed = List.map remove_comma splitted in 
+  List.filter (fun x -> x <> "") commas_removed;;
 
 let extract_int value =
   (* helper function extracting the integer denoted by value[1:] *)
   let len = String.length value in 
-  let sub = String.sub value 1 len in 
+  let sub = String.sub value 1 (len - 1) in
   int_of_string sub;;
 
 let to_value value =
+  (* convert a string denoting a value into a value. *)
   if String.equal value "PC" then 
     PC
   else if value.[0] = '#' then 
@@ -79,7 +66,7 @@ let parse_line line =
       else if String.equal tok "PUSH" then 
         PUSH (to_value first)
       else
-        LABEL first
+        raise (ParseError "unknown unary operator")
     | [] ->
       if String.equal tok "RET" then
         RET
@@ -88,33 +75,41 @@ let parse_line line =
       else if String.equal tok "HALT" then 
         HALT
       else 
-        NOP
+        LABEL tok
     | _ ->
-        raise (ParseError "too much operators provided.")
+        raise (ParseError "too many operators provided.")
   in
   let tokens = split_line_spaces line in 
   match tokens with
-  | [] -> raise (ParseError "empty line")
+  | [] -> NOP
   | (tok::rest) -> choose_token tok rest;;
 
 
 let rec create_hashtable lines current_label token_list h =
   match lines with 
-  | (LABEL new_label::next_tokens) -> begin
+  | (LABEL new_label::next_tokens) ->
+    if not (String.equal current_label "") then begin
       let current_tokens = List.rev token_list in 
       Hashtbl.add h current_label current_tokens;
-      create_hashtable next_tokens new_label [] h
+      create_hashtable next_tokens new_label [] h 
     end
+    else
+      create_hashtable next_tokens new_label [] h
   | (curr::next_lines) -> create_hashtable next_lines current_label (curr::token_list) h
-  | [] -> h;;
+  | [] ->
+      if not (String.equal current_label "") then begin
+        let current_tokens = List.rev token_list in 
+        Hashtbl.add h current_label current_tokens;
+        h 
+      end
+      else
+        h;;
 
-let parse_lines file =
-  let h = Hashtbl.create 5 in (* initial guess on number of labels *)
-  let lines = List.map parse_line (Extractcode.extract file) in  
-  match lines with 
-  | [] -> h 
-  | (LABEL l::next_lines) -> begin 
-    let final_hashtable = create_hashtable next_lines l [] h in 
-    final_hashtable
-  end
-  | _ -> raise (ParseError "instruction with no label.");; (* each program should begin with a label *)
+let parse_lines lines h =
+  let new_hashtable = create_hashtable lines "" [] h in
+  new_hashtable;;
+
+let parse_file file = 
+  let h = Hashtbl.create 5 in 
+  let lines = List.map parse_line (Extractcode.extract file) in 
+  parse_lines lines h;;

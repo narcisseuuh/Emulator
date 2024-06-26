@@ -32,8 +32,8 @@ let treat_line line =
 
 let treat_lines lines = List.filter (fun x -> x <> "") (List.map treat_line lines);;
 
+let show_lines lines = List.iter print_endline lines;;
+
 let extract file =
   let lines = read_input file in 
   treat_lines lines;;
-
-let show_lines lines = List.iter print_endline lines;;

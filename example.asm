@@ -1,22 +1,24 @@
 entry
   MOV R0, #0
-  SYSCALL ; syscall read(R0)
-  MOV R1, R0
+  SYSCALL ; syscall read()
+  PUSH R1 
 
   MOV R0, #0
-  SYSCALL ; syscall read(R0)
+  SYSCALL ; syscall read()
+  
+  POP R0 ; getting our first syscall's value in R0
 
-  CALL calculate
+  CALL calculate ; calculating read_0 - read_1
 
-  CALL show_result
+  CALL showresult ; showing result to user
 
-  HALT
+  HALT ; ending the program
 
 calculate
   SUB R0, R1
   RET
 
-show_result
+showresult
   MOV R1, R0
   MOV R0, #1
   SYSCALL ; syscall write(result (=R1))

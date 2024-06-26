@@ -1,15 +1,5 @@
 open! Parse
-
-type machine = {
-  registers : int array;
-  mutable pc : int;
-  stack : int Stack.t;
-  mutable ir : token;
-  mutable label : string; (* to know in which token we currently are *)
-  mutable finished : bool; (* have we hit the halt instruction *)
-  mutable prev_labels : string list; (* keeping in mind saved labels potentially *)
-}
-
+open! Types
 
 exception Fail of string
 

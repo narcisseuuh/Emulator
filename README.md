@@ -17,9 +17,9 @@ As a reminder, in Von Neumann architecture :
 | AND       | 000101 | register, imm or register, register | bitwise and                        |
 | OR        | 000110 | register, imm or register, register | bitwise or                         |
 | NOT       | 000111 | register                            | bitwise not                        |
-| JMP       | 001000 | register or imm                     | set PC to value                    |
-| JNZ       | 001001 | register or imm                     | JMP if R0 doesn't contain 0        |
-| CALL      | 010010 | register or imm                     | push a saved pc and jmp on label   |
+| JMP       | 001000 | label                               | set PC to value                    |
+| JNZ       | 001001 | label                               | JMP if R0 doesn't contain 0        |
+| CALL      | 010010 | label                               | push a saved pc and jmp on label   |
 | RET       | 010011 | nothing                             | equivalent of POP PC               |
 | POP       | 010100 | register                            | store value from stack on register |
 | PUSH      | 010101 | register or imm                     | place value from register on stack |

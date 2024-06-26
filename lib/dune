@@ -1,3 +1,3 @@
 (library
  (name emulator)
- (modules emulate extractcode parse))
+ (modules emulate extractcode parse prettyprint types))
