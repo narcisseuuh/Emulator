@@ -36,8 +36,8 @@ Example :
 
 | syscall | R0 | R1             |
 | :-----: | :-:| :------------: |
-| read    | 0  | value          |
-| write   | 0  | value          |
+| read    | 0  | return value   |
+| write   | 1  | written int    |
 
 ## Comments 
 

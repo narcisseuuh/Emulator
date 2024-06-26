@@ -96,4 +96,27 @@ let print_list f lst =
 
 let print_hashtable =
   Hashtbl.iter (fun label tokens ->
-    print_string label; print_endline ":"; print_list print_token tokens; print_newline ())
+    print_string label; print_endline ":"; print_list print_token tokens; print_newline ());;
+
+let print_machine m =
+  begin 
+    print_endline "(* ~~ machine ~~ *)";
+    print_string "state of registers : ";
+    Array.iter (fun x -> print_int x; print_string " ") m.registers;
+    print_newline ();
+    print_string "PC : ";
+    print_int m.pc;
+    print_newline ();
+    print_string "Stack : ";
+    Stack.iter print_int m.stack;
+    print_newline ();
+    print_string "IR : ";
+    print_token m.ir;
+    print_newline ();
+    print_string "current label : ";
+    print_string m.label;
+    print_newline ();
+    print_string "previous labels : ";
+    print_list print_string m.prev_labels;
+    print_newline ();
+  end;;

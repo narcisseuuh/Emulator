@@ -1,7 +1,7 @@
 entry
   MOV R0, #0
   SYSCALL ; syscall read()
-  PUSH R1 
+  PUSH R1
 
   MOV R0, #0
   SYSCALL ; syscall read()

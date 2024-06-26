@@ -9,10 +9,10 @@ exception Segmentation_Fault;;
 
 let exec_binop m v1 v2 operator =
   match (v1, v2) with 
-  | (REG x, IMM y) -> m.registers.(x) <- operator m.registers.(x) y
-  | (REG x, REG y) -> m.registers.(x) <- operator m.registers.(x) m.registers.(y)
-  | (PC, IMM y) -> m.pc <- operator m.pc y
-  | (PC, REG y) -> m.pc <- operator m.pc m.registers.(y)
+  | (REG x, IMM y) -> m.registers.(x) <- operator (m.registers.(x)) y
+  | (REG x, REG y) -> m.registers.(x) <- operator (m.registers.(x)) (m.registers.(y))
+  | (PC, IMM y) -> m.pc <- operator (m.pc) y
+  | (PC, REG y) -> m.pc <- operator (m.pc) (m.registers.(y))
   | _ -> raise (Fail "binary operator applied on wrong arguments");;
 
 let exec_jmp m label =
@@ -20,7 +20,8 @@ let exec_jmp m label =
   m.label <- label;;
 
 let exec_call m label = 
-  Stack.push m.pc m.stack; 
+  Stack.push m.pc m.stack;
+  m.pc <- 0;
   let prev_labels = (m.label :: m.prev_labels) in
   m.prev_labels <- prev_labels;
   m.label <- label;;
@@ -40,13 +41,13 @@ let exec_syscall m =
     print_int (m.registers.(1))
   else if m.registers.(0) = 0 then
     let n = read_int () in 
-    m.registers.(0) <- n
+    m.registers.(1) <- n
   else 
     raise (Fail "this syscall does not exist...");;
 
 let exec_instruction m =
   match m.ir with 
-  | MOV (v1, v2) -> exec_binop m v1 v2 (fun _ -> fun y -> y)
+  | MOV (v1, v2) -> exec_binop m v1 v2 (fun _ y -> y)
   | ADD (v1, v2) -> exec_binop m v1 v2 (+)
   | SUB (v1, v2) -> exec_binop m v1 v2 (-)
   | AND (v1, v2) -> exec_binop m v1 v2 (land)
@@ -63,7 +64,8 @@ let exec_instruction m =
       let n = Stack.pop (m.stack) in 
       m.pc <- n 
   | POP _ -> raise (Fail "pop applied on wrong argument")
-  | PUSH (REG x) | PUSH (IMM x) -> Stack.push x m.stack 
+  | PUSH (REG x) -> Stack.push (m.registers.(x)) m.stack
+  | PUSH (IMM x) -> Stack.push x m.stack 
   | PUSH PC -> Stack.push m.pc m.stack 
   | LABEL _ -> raise (Fail "cannot execute label")
   | RET -> exec_ret m 
@@ -93,9 +95,14 @@ let rec exec_instructions m to_exec prev_exec h =
   if not (m.finished) then begin
     let prev_pc = m.pc in 
     exec_instruction m;
-    let (new_to_exec, new_prev_exec) = move to_exec prev_exec (m.pc - prev_pc) in 
-    m.ir <- List.hd to_exec;
-    exec_instructions m new_to_exec new_prev_exec h
+    m.pc <- m.pc + 1;
+    if (to_exec <> []) then begin
+      let (new_to_exec, new_prev_exec) = move (to_exec) (prev_exec) (m.pc - prev_pc) in 
+      m.ir <- List.hd new_to_exec;
+      Prettyprint.print_machine m;
+      print_newline ();
+      exec_instructions m new_to_exec new_prev_exec h
+    end
   end;;
 
 
